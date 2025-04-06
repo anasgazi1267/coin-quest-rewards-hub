@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,8 +10,7 @@ import {
   DialogDescription, 
   DialogFooter, 
   DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+  DialogTitle
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { 
@@ -22,15 +21,17 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Coins, Plus, Pencil, Trash } from 'lucide-react';
+import { Coins, Plus, Pencil, Trash, Upload } from 'lucide-react';
 import { getRewards, saveReward, deleteReward } from '@/lib/rewards';
 import { Reward } from '@/types';
 import { toast } from '@/lib/toast';
 import NavSidebar from '@/components/admin/NavSidebar';
+import ImageUploader from '@/components/admin/ImageUploader';
 
 const AdminRewards: React.FC = () => {
   const [rewards, setRewards] = useState<Reward[]>(getRewards());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isImageUploaderOpen, setIsImageUploaderOpen] = useState(false);
   const [editingReward, setEditingReward] = useState<Reward | null>(null);
   
   const [name, setName] = useState('');
@@ -39,6 +40,16 @@ const AdminRewards: React.FC = () => {
   const [category, setCategory] = useState('');
   const [image, setImage] = useState('');
   const [available, setAvailable] = useState(true);
+  const [requiresId, setRequiresId] = useState(false);
+  
+  useEffect(() => {
+    // Set requiresId based on category when category changes
+    if (category === 'pubg' || category === 'free-fire') {
+      setRequiresId(true);
+    } else {
+      setRequiresId(false);
+    }
+  }, [category]);
   
   const resetForm = () => {
     setName('');
@@ -47,6 +58,7 @@ const AdminRewards: React.FC = () => {
     setCategory('');
     setImage('/placeholder.svg');
     setAvailable(true);
+    setRequiresId(false);
     setEditingReward(null);
   };
   
@@ -59,6 +71,7 @@ const AdminRewards: React.FC = () => {
       setCategory(reward.category);
       setImage(reward.image);
       setAvailable(reward.available);
+      setRequiresId(reward.requiresId || false);
     } else {
       resetForm();
     }
@@ -92,6 +105,7 @@ const AdminRewards: React.FC = () => {
       category: category as any,
       image: image || '/placeholder.svg',
       available,
+      requiresId: requiresId
     };
     
     const savedReward = saveReward(rewardData);
@@ -107,6 +121,11 @@ const AdminRewards: React.FC = () => {
       setRewards(getRewards());
       toast.success('Reward deleted successfully');
     }
+  };
+  
+  const handleImageSelected = (imageUrl: string) => {
+    setImage(imageUrl);
+    setIsImageUploaderOpen(false);
   };
   
   return (
@@ -138,6 +157,7 @@ const AdminRewards: React.FC = () => {
                       <th className="px-4 py-3.5 text-left text-sm font-semibold text-muted-foreground">Category</th>
                       <th className="px-4 py-3.5 text-right text-sm font-semibold text-muted-foreground">Cost</th>
                       <th className="px-4 py-3.5 text-center text-sm font-semibold text-muted-foreground">Status</th>
+                      <th className="px-4 py-3.5 text-center text-sm font-semibold text-muted-foreground">Requires ID</th>
                       <th className="px-4 py-3.5 text-right text-sm font-semibold text-muted-foreground">Actions</th>
                     </tr>
                   </thead>
@@ -174,6 +194,9 @@ const AdminRewards: React.FC = () => {
                           }`}>
                             {reward.available ? 'Available' : 'Out of Stock'}
                           </span>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-center">
+                          {reward.requiresId ? 'Yes' : 'No'}
                         </td>
                         <td className="px-4 py-4 text-sm text-right">
                           <div className="flex items-center justify-end gap-2">
@@ -272,13 +295,35 @@ const AdminRewards: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="image">Image URL</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="image">Reward Image</Label>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setIsImageUploaderOpen(true)}
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload Image
+                    </Button>
+                  </div>
+                  
                   <Input 
                     id="image" 
                     value={image} 
                     onChange={(e) => setImage(e.target.value)} 
                     placeholder="/placeholder.svg" 
                   />
+                  
+                  {image && (
+                    <div className="mt-2 rounded-md border p-2 max-w-24 max-h-24">
+                      <img 
+                        src={image} 
+                        alt="Reward preview" 
+                        className="h-20 w-20 object-cover rounded" 
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -289,6 +334,14 @@ const AdminRewards: React.FC = () => {
                   />
                   <Label htmlFor="available">Available for redemption</Label>
                 </div>
+                
+                {requiresId && (
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-md">
+                    <p className="text-sm text-amber-800">
+                      This reward type requires players to provide their game ID during redemption.
+                    </p>
+                  </div>
+                )}
               </div>
               
               <DialogFooter>
@@ -299,6 +352,24 @@ const AdminRewards: React.FC = () => {
                   {editingReward ? 'Update Reward' : 'Add Reward'}
                 </Button>
               </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          
+          {/* Image Uploader Dialog */}
+          <Dialog open={isImageUploaderOpen} onOpenChange={setIsImageUploaderOpen}>
+            <DialogContent className="sm:max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Upload or Select Image</DialogTitle>
+                <DialogDescription>
+                  Upload a new image or select from your media library
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <ImageUploader 
+                  onImageUploaded={handleImageSelected}
+                  showGallery={true}
+                />
+              </div>
             </DialogContent>
           </Dialog>
         </div>

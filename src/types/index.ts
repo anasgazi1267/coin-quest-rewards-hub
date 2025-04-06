@@ -1,4 +1,3 @@
-
 // User related types
 export interface User {
   id: string;
@@ -31,22 +30,25 @@ export interface Reward {
   id: string;
   name: string;
   description: string;
-  image: string;
   cost: number;
+  category: 'amazon' | 'google' | 'pubg' | 'free-fire' | 'visa';
+  image: string;
   available: boolean;
-  category: string;
+  requiresId?: boolean;
 }
 
 export interface WithdrawalRequest {
   id: string;
   userId: string;
+  username: string;
   rewardId: string;
+  rewardName: string;
+  cost: number;
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
-  contactInfo?: string;
-  username?: string; // Username of the requester
-  rewardName?: string; // Name of the reward
-  cost?: number; // Cost of the reward
+  processedAt?: string;
+  rejectionReason?: string;
+  playerId?: string;
 }
 
 // Ad related types

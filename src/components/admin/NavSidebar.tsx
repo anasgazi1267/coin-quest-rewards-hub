@@ -8,7 +8,8 @@ import {
   CheckSquare, 
   FileText, 
   Settings,
-  LogOut
+  LogOut,
+  Image
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { logout } from '@/lib/auth';
@@ -35,12 +36,13 @@ const NavSidebar: React.FC = () => {
     { href: '/admin/rewards', icon: Gift, label: 'Rewards' },
     { href: '/admin/tasks', icon: CheckSquare, label: 'Tasks' },
     { href: '/admin/ads', icon: FileText, label: 'Ads' },
+    { href: '/admin/media', icon: Image, label: 'Media Library' },
     { href: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
   
   return (
-    <aside className="flex h-screen w-64 flex-col border-r bg-card">
-      <div className="flex h-14 items-center border-b px-4">
+    <aside className="flex h-screen w-64 flex-col border-r bg-card shadow-md">
+      <div className="flex h-14 items-center border-b px-4 bg-primary text-primary-foreground">
         <Link to="/admin" className="flex items-center gap-2 font-semibold">
           <LayoutDashboard className="h-6 w-6" />
           <span>Admin Panel</span>
@@ -55,7 +57,7 @@ const NavSidebar: React.FC = () => {
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                   isActive(link.href)
-                    ? "bg-accent text-accent-foreground"
+                    ? "bg-primary text-primary-foreground"
                     : "hover:bg-accent hover:text-accent-foreground"
                 )}
               >

@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -23,8 +23,20 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 import { initializeStorage } from "./lib/data";
+import { getCurrentUser } from "./lib/auth";
 
 const queryClient = new QueryClient();
+
+// Admin route guard component
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const user = getCurrentUser();
+  
+  if (!user || user.role !== 'admin') {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
 
 const App = () => {
   useEffect(() => {
@@ -48,13 +60,16 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/view-ads" element={<ViewAds />} />
               <Route path="/withdrawals" element={<Withdrawals />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/users" element={<AdminUsers />} />
-              <Route path="/admin/rewards" element={<AdminRewards />} />
-              <Route path="/admin/tasks" element={<AdminTasks />} />
-              <Route path="/admin/ads" element={<AdminAds />} />
-              <Route path="/admin/media" element={<AdminMedia />} />
-              <Route path="/admin/settings" element={<AdminSettings />} />
+              
+              {/* Admin routes with route guard */}
+              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+              <Route path="/admin/rewards" element={<AdminRoute><AdminRewards /></AdminRoute>} />
+              <Route path="/admin/tasks" element={<AdminRoute><AdminTasks /></AdminRoute>} />
+              <Route path="/admin/ads" element={<AdminRoute><AdminAds /></AdminRoute>} />
+              <Route path="/admin/media" element={<AdminRoute><AdminMedia /></AdminRoute>} />
+              <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+              
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

@@ -1,3 +1,4 @@
+
 import { WithdrawalRequest } from '@/types';
 import { STORAGE_KEYS } from './data';
 import { getCurrentUser, updateUserCoins } from './auth';
@@ -25,8 +26,7 @@ export const getUserWithdrawalRequests = (userId: string): WithdrawalRequest[] =
 // Create a new withdrawal request
 export const createWithdrawalRequest = (
   rewardId: string,
-  rewardName: string,
-  cost: number
+  playerId?: string
 ): WithdrawalRequest | null => {
   const currentUser = getCurrentUser();
   if (!currentUser) {
@@ -34,13 +34,26 @@ export const createWithdrawalRequest = (
     return null;
   }
   
-  if (currentUser.coins < cost) {
+  const rewards = JSON.parse(localStorage.getItem(STORAGE_KEYS.REWARDS) || '[]');
+  const reward = rewards.find((r: any) => r.id === rewardId);
+  
+  if (!reward) {
+    toast.error('Reward not found');
+    return null;
+  }
+  
+  if (currentUser.coins < reward.cost) {
     toast.error('Not enough coins for this reward');
     return null;
   }
   
+  if (reward.requiresId && !playerId) {
+    toast.error(`You must provide your ${reward.category === 'pubg' ? 'PUBG' : 'Free Fire'} ID`);
+    return null;
+  }
+  
   // Deduct coins from user
-  updateUserCoins(currentUser.id, currentUser.coins - cost);
+  updateUserCoins(currentUser.id, currentUser.coins - reward.cost);
   
   // Create the request
   const newRequest: WithdrawalRequest = {
@@ -48,16 +61,18 @@ export const createWithdrawalRequest = (
     userId: currentUser.id,
     username: currentUser.username,
     rewardId,
-    rewardName,
-    cost,
+    rewardName: reward.name,
+    cost: reward.cost,
     status: 'pending',
     createdAt: new Date().toISOString(),
+    playerId
   };
   
   // Save to storage
   const requests = getWithdrawalRequests();
   saveWithdrawalRequests([...requests, newRequest]);
   
+  toast.success("Redemption request submitted successfully!");
   return newRequest;
 };
 
