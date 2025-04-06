@@ -44,7 +44,7 @@ const Layout: React.FC = () => {
     <div className="flex min-h-screen flex-col">
       {!isAdminPage && <Navbar isMobile={isMobile} isOpen={isOpen} onClose={() => setIsOpen(!isOpen)} />}
 
-      {/* Top Banner */}
+      {/* Top Banner Ad */}
       {!isAdminPage && (
         <div className="w-full max-w-7xl mx-auto my-4 px-4">
           <BannerAd />
@@ -53,17 +53,23 @@ const Layout: React.FC = () => {
 
       <main className="flex-1">
         <Outlet />
-      </main>
-
-      {!isAdminPage && (
-        <>
-          {/* Bottom Banner */}
-          <div className="w-full max-w-7xl mx-auto my-4 px-4">
+        
+        {/* Middle Banner Ad - Only on non-admin pages */}
+        {!isAdminPage && (
+          <div className="w-full max-w-7xl mx-auto my-8 px-4">
             <BannerAd />
           </div>
-          <Footer />
-        </>
+        )}
+      </main>
+
+      {/* Bottom Banner Ad */}
+      {!isAdminPage && (
+        <div className="w-full max-w-7xl mx-auto my-4 px-4">
+          <BannerAd />
+        </div>
       )}
+
+      {!isAdminPage && <Footer />}
     </div>
   );
 };

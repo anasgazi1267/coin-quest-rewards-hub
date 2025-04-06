@@ -1,4 +1,3 @@
-
 import { WithdrawalRequest } from '@/types';
 import { STORAGE_KEYS } from './data';
 import { getCurrentUser, updateUserCoins } from './auth';
@@ -65,7 +64,7 @@ export const createWithdrawalRequest = (
 // Update a withdrawal request status
 export const updateWithdrawalRequestStatus = (
   requestId: string,
-  status: 'pending' | 'completed' | 'rejected',
+  status: 'pending' | 'approved' | 'rejected',
   rejectionReason?: string
 ): WithdrawalRequest | null => {
   const requests = getWithdrawalRequests();
