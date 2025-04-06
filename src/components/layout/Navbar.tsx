@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -52,7 +53,6 @@ const Navbar: React.FC<NavbarProps> = ({ isMobile, isOpen, onClose }) => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="h-8 w-8 p-0">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={currentUser.avatar} alt={currentUser.username} />
                       <AvatarFallback>{currentUser.username.slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                   </Button>

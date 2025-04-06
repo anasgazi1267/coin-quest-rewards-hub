@@ -166,7 +166,8 @@ export const STORAGE_KEYS = {
   AD_CONTENTS: 'coin-quest-ad-contents',
   APP_SETTINGS: 'coin-quest-app-settings',
   DAILY_REWARDS: 'coin-quest-daily-rewards',
-  INVITATIONS: 'coin-quest-invitations'
+  INVITATIONS: 'coin-quest-invitations',
+  CURRENT_USER: 'coin-quest-current-user'
 };
 
 // Initialize storage with mock data

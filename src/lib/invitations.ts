@@ -1,7 +1,7 @@
 
 import { Invitation, User } from '@/types';
 import { STORAGE_KEYS } from './data';
-import { getCurrentUser, getAllUsers, saveUsers } from './auth';
+import { getCurrentUser, getUsers, saveUsers } from './auth';
 import { toast } from '@/lib/toast';
 
 // Get all invitations
@@ -48,7 +48,7 @@ export const createInvitation = (userId: string): Invitation => {
   saveInvitations([...invitations, newInvitation]);
   
   // Update user with invite code
-  const users = getAllUsers();
+  const users = getUsers();
   const updatedUsers = users.map(user => {
     if (user.id === userId) {
       return { ...user, inviteCode: newInvitation.code };
@@ -112,7 +112,7 @@ export const useInviteCode = (code: string): boolean => {
   saveInvitations(updatedInvitations);
   
   // Update both users
-  const users = getAllUsers();
+  const users = getUsers();
   const inviter = users.find(user => user.id === invitation.userId);
   
   if (inviter) {

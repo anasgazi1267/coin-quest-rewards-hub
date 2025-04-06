@@ -1,3 +1,4 @@
+
 import { User } from '@/types';
 import { STORAGE_KEYS } from './data';
 import { toast } from '@/lib/toast';
@@ -25,6 +26,12 @@ export const saveCurrentUser = (user: User): void => {
   const users = getUsers();
   const updatedUsers = users.map(u => u.id === user.id ? user : u);
   localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(updatedUsers));
+};
+
+// Save all users
+export const saveUsers = (users: User[]): void => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
 };
 
 // Login user
@@ -70,8 +77,9 @@ export const register = (username: string, email: string, password: string): Use
     id: Date.now().toString(),
     username,
     email,
+    password,
+    name: username,
     coins: 0,
-    avatar: '/placeholder.svg',
     role: 'user',
     createdAt: new Date().toISOString(),
   };
@@ -83,6 +91,27 @@ export const register = (username: string, email: string, password: string): Use
   // Login the new user
   saveCurrentUser(newUser);
   return newUser;
+};
+
+// Update user
+export const updateUser = (userId: string, userData: Partial<User>): User | null => {
+  const users = getUsers();
+  const userIndex = users.findIndex(user => user.id === userId);
+  
+  if (userIndex === -1) return null;
+  
+  const updatedUser = { ...users[userIndex], ...userData };
+  users[userIndex] = updatedUser;
+  
+  saveUsers(users);
+  
+  // If this is the current user, update current user as well
+  const currentUser = getCurrentUser();
+  if (currentUser && currentUser.id === userId) {
+    saveCurrentUser(updatedUser);
+  }
+  
+  return updatedUser;
 };
 
 // Logout user

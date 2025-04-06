@@ -12,6 +12,7 @@ export interface User {
   inviteCode?: string; // User's unique invite code
   invitedBy?: string; // ID of the user who invited this user
   inviteCount?: number; // Number of users this user has invited
+  lastDailyReward?: string; // Last time user claimed daily reward
 }
 
 // Task related types
@@ -43,6 +44,9 @@ export interface WithdrawalRequest {
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
   contactInfo?: string;
+  username?: string; // Username of the requester
+  rewardName?: string; // Name of the reward
+  cost?: number; // Cost of the reward
 }
 
 // Ad related types
