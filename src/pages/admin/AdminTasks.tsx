@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Coins, Plus, Pencil, Trash, ExternalLink, BrandYoutube, BrandTelegram } from 'lucide-react';
+import { Coins, Plus, Pencil, Trash, ExternalLink, Youtube, MessageCircle } from 'lucide-react';
 import { getTasks, saveTask, deleteTask } from '@/lib/tasks';
 import { Task } from '@/types';
 import { toast } from '@/lib/toast';
@@ -67,7 +66,6 @@ const AdminTasks: React.FC = () => {
   };
   
   const handleSaveTask = () => {
-    // Validate form
     if (!title || !description || !coins) {
       toast.error('Please fill in all required fields');
       return;
@@ -79,7 +77,6 @@ const AdminTasks: React.FC = () => {
       return;
     }
     
-    // Validate URL for certain task types
     if (['youtube', 'telegram', 'social'].includes(taskType) && !taskUrl) {
       toast.error(`URL is required for ${taskType} tasks`);
       return;
@@ -113,9 +110,9 @@ const AdminTasks: React.FC = () => {
   const getTaskTypeIcon = (type: string) => {
     switch (type) {
       case 'youtube':
-        return <BrandYoutube className="h-4 w-4 mr-2 text-red-500" />;
+        return <Youtube className="h-4 w-4 mr-2 text-red-500" />;
       case 'telegram':
-        return <BrandTelegram className="h-4 w-4 mr-2 text-blue-500" />;
+        return <MessageCircle className="h-4 w-4 mr-2 text-blue-500" />;
       case 'social':
         return <ExternalLink className="h-4 w-4 mr-2 text-purple-500" />;
       default:
@@ -221,7 +218,6 @@ const AdminTasks: React.FC = () => {
             </CardContent>
           </Card>
           
-          {/* Add/Edit Task Dialog */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>

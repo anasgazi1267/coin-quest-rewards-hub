@@ -1,3 +1,4 @@
+
 import { User, Reward, Task, AdOption, WithdrawalRequest, AdContent, AppSettings } from '@/types';
 
 // Mock initial users
@@ -6,8 +7,9 @@ export const users: User[] = [
     id: '1',
     username: 'anasgazi1',
     email: 'admin@example.com',
+    password: 'admin123', // In a real app, this would be hashed
+    name: 'Admin User',
     coins: 10000,
-    avatar: '/placeholder.svg',
     role: 'admin',
     createdAt: new Date().toISOString(),
   },
@@ -15,8 +17,9 @@ export const users: User[] = [
     id: '2',
     username: 'demouser',
     email: 'user@example.com',
+    password: 'demo123', // In a real app, this would be hashed
+    name: 'Demo User',
     coins: 500,
-    avatar: '/placeholder.svg',
     role: 'user',
     createdAt: new Date().toISOString(),
   },

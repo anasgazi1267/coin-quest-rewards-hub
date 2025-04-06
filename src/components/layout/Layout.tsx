@@ -6,14 +6,14 @@ import Footer from './Footer';
 import { getCurrentUser } from '@/lib/auth';
 import BannerAd from '../ads/BannerAd';
 import { initializeStorage } from '@/lib/data';
-import { useMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     // Initialize data in localStorage

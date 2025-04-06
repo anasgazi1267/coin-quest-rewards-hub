@@ -48,16 +48,17 @@ const Profile: React.FC = () => {
     
     setIsSaving(true);
     
-    const updatedUser = {
-      ...user,
+    const updatedUserData = {
       name,
       email,
     };
     
-    updateUser(updatedUser);
-    setUser(updatedUser);
+    const updatedUser = updateUser(user.id, updatedUserData);
+    if (updatedUser) {
+      setUser(updatedUser);
+      toast.success('Profile updated successfully');
+    }
     
-    toast.success('Profile updated successfully');
     setIsSaving(false);
   };
   
