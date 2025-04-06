@@ -1,21 +1,17 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Coins, Menu, X } from 'lucide-react';
+import { getCurrentUser } from '@/lib/auth';
+import { getAppSettings } from '@/lib/settings';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Toaster } from '@/components/ui/sonner';
-import { getCurrentUser, logout } from '@/lib/auth';
-import { User, LogOut, Menu, X } from 'lucide-react';
-import { toast } from '@/lib/toast';
-import DailyRewardButton from '@/components/rewards/DailyRewardButton';
 
 interface NavbarProps {
   isMobile: boolean;
@@ -24,67 +20,128 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ isMobile, isOpen, onClose }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const currentUser = getCurrentUser();
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    toast.success('Logged out successfully');
-    navigate('/login');
-  };
-
+  const user = getCurrentUser();
+  const appSettings = getAppSettings();
+  
   return (
-    <div className="bg-background border-b">
-      <div className="container flex h-16 items-center justify-between py-4">
-        <Link to="/" className="font-bold text-2xl">
-          CoinMaster
+    <header className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center px-4">
+        <Link to="/" className="flex items-center gap-2">
+          <Coins className="h-6 w-6 text-primary" />
+          <span className="font-bold text-xl hidden sm:inline-block">{appSettings.siteName}</span>
         </Link>
-
+        
         {isMobile ? (
-          <button onClick={onClose}>
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        ) : (
-          <div className="flex items-center gap-4">
-            <DailyRewardButton />
-            {currentUser ? (
-              <DropdownMenu open={showDropdown} onOpenChange={setShowDropdown}>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback>{currentUser.username.slice(0, 2).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/profile')}>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <>
-                <Button variant="outline" size="sm" onClick={() => navigate('/login')}>
-                  Login
-                </Button>
-                <Button size="sm" onClick={() => navigate('/register')}>
-                  Register
-                </Button>
-              </>
+          <>
+            <div className="ml-auto">
+              <Button variant="ghost" size="icon" onClick={onClose}>
+                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </Button>
+            </div>
+            
+            {isOpen && (
+              <div className="fixed inset-0 top-16 z-50 bg-background flex flex-col p-6 space-y-4">
+                <Link to="/" className="text-lg font-medium" onClick={onClose}>Home</Link>
+                <Link to="/rewards" className="text-lg font-medium" onClick={onClose}>Rewards</Link>
+                <Link to="/tasks" className="text-lg font-medium" onClick={onClose}>Tasks</Link>
+                <Link to="/view-ads" className="text-lg font-medium" onClick={onClose}>View Ads</Link>
+                
+                {user ? (
+                  <>
+                    <Link to="/withdrawals" className="text-lg font-medium" onClick={onClose}>Withdrawals</Link>
+                    <Link to="/profile" className="text-lg font-medium" onClick={onClose}>Profile</Link>
+                    <Button variant="destructive" onClick={() => {
+                      localStorage.removeItem('coin-quest-current-user');
+                      navigate('/login');
+                      onClose();
+                    }}>
+                      Log Out
+                    </Button>
+                  </>
+                ) : (
+                  <div className="flex flex-col space-y-2">
+                    <Button onClick={() => { navigate('/login'); onClose(); }}>Login</Button>
+                    <Button variant="outline" onClick={() => { navigate('/register'); onClose(); }}>
+                      Register
+                    </Button>
+                  </div>
+                )}
+              </div>
             )}
-          </div>
+          </>
+        ) : (
+          <>
+            <nav className="mx-6 flex items-center space-x-4 lg:space-x-6">
+              <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
+                Home
+              </Link>
+              <Link to="/rewards" className="text-sm font-medium transition-colors hover:text-primary">
+                Rewards
+              </Link>
+              <Link to="/tasks" className="text-sm font-medium transition-colors hover:text-primary">
+                Tasks
+              </Link>
+              <Link to="/view-ads" className="text-sm font-medium transition-colors hover:text-primary">
+                View Ads
+              </Link>
+              {user && (
+                <Link to="/withdrawals" className="text-sm font-medium transition-colors hover:text-primary">
+                  Withdrawals
+                </Link>
+              )}
+            </nav>
+            
+            <div className="ml-auto flex items-center space-x-4">
+              {user ? (
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1 bg-accent/50 px-3 py-1 rounded-full">
+                    <Coins className="h-4 w-4 text-amber-500" />
+                    <span className="text-sm font-medium">{user.coins}</span>
+                  </div>
+                  
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="relative">
+                        {user.name || user.username}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {user.role === 'admin' && (
+                        <>
+                          <DropdownMenuItem onSelect={() => navigate('/admin')}>
+                            Admin Dashboard
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                        </>
+                      )}
+                      <DropdownMenuItem onSelect={() => navigate('/profile')}>
+                        Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => navigate('/withdrawals')}>
+                        My Withdrawals
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onSelect={() => {
+                        localStorage.removeItem('coin-quest-current-user');
+                        navigate('/login');
+                      }}>
+                        Log Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Button variant="ghost" onClick={() => navigate('/login')}>Login</Button>
+                  <Button onClick={() => navigate('/register')}>Register</Button>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
-      <Toaster position="top-center" />
-    </div>
+    </header>
   );
 };
 

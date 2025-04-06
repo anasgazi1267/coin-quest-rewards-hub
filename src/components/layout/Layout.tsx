@@ -43,12 +43,22 @@ const Layout: React.FC = () => {
   return (
     <div className="flex min-h-screen flex-col">
       {!isAdminPage && <Navbar isMobile={isMobile} isOpen={isOpen} onClose={() => setIsOpen(!isOpen)} />}
+
+      {/* Top Banner */}
+      {!isAdminPage && (
+        <div className="w-full max-w-7xl mx-auto my-4 px-4">
+          <BannerAd />
+        </div>
+      )}
+
       <main className="flex-1">
         <Outlet />
       </main>
+
       {!isAdminPage && (
         <>
-          <div className="w-full max-w-7xl mx-auto my-4 px-4 flex flex-col space-y-4">
+          {/* Bottom Banner */}
+          <div className="w-full max-w-7xl mx-auto my-4 px-4">
             <BannerAd />
           </div>
           <Footer />

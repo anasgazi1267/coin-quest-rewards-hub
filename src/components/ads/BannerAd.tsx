@@ -6,9 +6,9 @@ const BannerAd: React.FC = () => {
   const bannerAds = getActiveBannerAds();
   
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       {bannerAds.length === 0 ? (
-        <div className="w-full flex flex-col space-y-4">
+        <div className="w-full flex flex-col space-y-8">
           {[1, 2, 3].map((i) => (
             <div key={i} className="w-[234px] h-[60px] bg-gray-100 rounded flex items-center justify-center text-gray-400 text-sm mx-auto shadow-sm hover:shadow transition-shadow">
               Banner Ad Space {i}
@@ -16,7 +16,7 @@ const BannerAd: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col space-y-4 items-center">
+        <div className="flex flex-col space-y-8 items-center">
           {bannerAds.map((ad, index) => (
             <div 
               key={ad.id}

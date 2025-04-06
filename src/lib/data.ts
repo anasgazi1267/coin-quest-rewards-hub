@@ -1,4 +1,3 @@
-
 import { User, Reward, Task, AdOption, WithdrawalRequest, AdContent, AppSettings } from '@/types';
 
 // Mock initial users
@@ -170,12 +169,52 @@ export const STORAGE_KEYS = {
   APP_SETTINGS: 'coin-quest-app-settings',
   DAILY_REWARDS: 'coin-quest-daily-rewards',
   INVITATIONS: 'coin-quest-invitations',
-  CURRENT_USER: 'coin-quest-current-user'
+  CURRENT_USER: 'coin-quest-current-user',
+  IMAGES: 'coin-quest-images',
+  LAST_SYNC: 'coin-quest-last-sync',
+};
+
+// Storage synchronization mechanism to solve cross-browser issues
+const syncStorage = () => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    // Broadcast channel for cross-tab communication
+    const storageUpdateChannel = new BroadcastChannel('coin-quest-storage-sync');
+    
+    // Listen for storage changes from other tabs
+    storageUpdateChannel.onmessage = (event) => {
+      if (event.data && event.data.key && event.data.value) {
+        // Update local storage without triggering another event
+        localStorage.setItem(event.data.key, event.data.value);
+      }
+    };
+    
+    // Override localStorage.setItem to broadcast changes
+    const originalSetItem = localStorage.setItem;
+    localStorage.setItem = function(key, value) {
+      // Call the original function
+      originalSetItem.apply(this, [key, value]);
+      
+      // Broadcast the change to other tabs
+      if (key.startsWith('coin-quest-')) {
+        storageUpdateChannel.postMessage({ key, value });
+      }
+      
+      // Update last sync timestamp
+      originalSetItem.apply(this, [STORAGE_KEYS.LAST_SYNC, new Date().toISOString()]);
+    };
+  } catch (error) {
+    console.error('Storage sync setup failed:', error);
+  }
 };
 
 // Initialize storage with mock data
 export const initializeStorage = () => {
   if (typeof window === 'undefined') return;
+
+  // Setup storage synchronization
+  syncStorage();
 
   if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
     localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
@@ -203,5 +242,9 @@ export const initializeStorage = () => {
   
   if (!localStorage.getItem(STORAGE_KEYS.APP_SETTINGS)) {
     localStorage.setItem(STORAGE_KEYS.APP_SETTINGS, JSON.stringify(appSettings));
+  }
+  
+  if (!localStorage.getItem(STORAGE_KEYS.IMAGES)) {
+    localStorage.setItem(STORAGE_KEYS.IMAGES, JSON.stringify([]));
   }
 };

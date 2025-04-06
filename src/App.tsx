@@ -11,11 +11,14 @@ import Register from "./pages/Register";
 import Rewards from "./pages/Rewards";
 import Tasks from "./pages/Tasks";
 import Profile from "./pages/Profile";
+import ViewAds from "./pages/ViewAds";
+import Withdrawals from "./pages/Withdrawals";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminRewards from "./pages/admin/AdminRewards";
 import AdminTasks from "./pages/admin/AdminTasks";
 import AdminAds from "./pages/admin/AdminAds";
+import AdminMedia from "./pages/admin/AdminMedia";
 import AdminSettings from "./pages/admin/AdminSettings";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
@@ -43,11 +46,14 @@ const App = () => {
               <Route path="/rewards" element={<Rewards />} />
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/view-ads" element={<ViewAds />} />
+              <Route path="/withdrawals" element={<Withdrawals />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/rewards" element={<AdminRewards />} />
               <Route path="/admin/tasks" element={<AdminTasks />} />
               <Route path="/admin/ads" element={<AdminAds />} />
+              <Route path="/admin/media" element={<AdminMedia />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="*" element={<NotFound />} />
             </Route>
