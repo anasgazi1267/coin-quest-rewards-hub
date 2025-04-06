@@ -1,3 +1,4 @@
+
 import { AdOption, AdContent } from '@/types';
 import { STORAGE_KEYS } from './data';
 import { getCurrentUser, updateUserCoins } from './auth';
@@ -144,8 +145,8 @@ export const getActivePopupAd = (): AdContent | null => {
   return contents.find(content => content.type === 'popup' && content.active) || null;
 };
 
-// Get active banner ad
-export const getActiveBannerAd = (): AdContent | null => {
+// Get active banner ads (multiple)
+export const getActiveBannerAds = (): AdContent[] => {
   const contents = getAdContents();
-  return contents.find(content => content.type === 'banner' && content.active) || null;
+  return contents.filter(content => content.type === 'banner' && content.active).slice(0, 3);
 };

@@ -1,4 +1,3 @@
-
 import { User, Reward, Task, AdOption, WithdrawalRequest, AdContent, AppSettings } from '@/types';
 
 // Mock initial users
@@ -159,14 +158,15 @@ export const appSettings: AppSettings = {
 
 // Local storage keys
 export const STORAGE_KEYS = {
-  CURRENT_USER: 'coin-quest-current-user',
   USERS: 'coin-quest-users',
-  REWARDS: 'coin-quest-rewards',
   TASKS: 'coin-quest-tasks',
-  AD_OPTIONS: 'coin-quest-ad-options',
+  REWARDS: 'coin-quest-rewards',
   WITHDRAWAL_REQUESTS: 'coin-quest-withdrawal-requests',
+  AD_OPTIONS: 'coin-quest-ad-options',
   AD_CONTENTS: 'coin-quest-ad-contents',
   APP_SETTINGS: 'coin-quest-app-settings',
+  DAILY_REWARDS: 'coin-quest-daily-rewards',
+  INVITATIONS: 'coin-quest-invitations'
 };
 
 // Initialize storage with mock data

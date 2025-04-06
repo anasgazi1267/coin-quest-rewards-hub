@@ -13,7 +13,14 @@ import {
   DialogTitle 
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Coins, Plus, Pencil, Trash } from 'lucide-react';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { Coins, Plus, Pencil, Trash, ExternalLink, BrandYoutube, BrandTelegram } from 'lucide-react';
 import { getTasks, saveTask, deleteTask } from '@/lib/tasks';
 import { Task } from '@/types';
 import { toast } from '@/lib/toast';
@@ -27,11 +34,15 @@ const AdminTasks: React.FC = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [coins, setCoins] = useState('');
+  const [taskType, setTaskType] = useState<'regular' | 'social' | 'youtube' | 'telegram'>('regular');
+  const [taskUrl, setTaskUrl] = useState('');
   
   const resetForm = () => {
     setTitle('');
     setDescription('');
     setCoins('');
+    setTaskType('regular');
+    setTaskUrl('');
     setEditingTask(null);
   };
   
@@ -41,6 +52,8 @@ const AdminTasks: React.FC = () => {
       setTitle(task.title);
       setDescription(task.description);
       setCoins(task.coins.toString());
+      setTaskType(task.type || 'regular');
+      setTaskUrl(task.url || '');
     } else {
       resetForm();
     }
@@ -66,11 +79,20 @@ const AdminTasks: React.FC = () => {
       return;
     }
     
+    // Validate URL for certain task types
+    if (['youtube', 'telegram', 'social'].includes(taskType) && !taskUrl) {
+      toast.error(`URL is required for ${taskType} tasks`);
+      return;
+    }
+    
     const taskData: Task = {
       id: editingTask?.id || '',
       title,
       description,
       coins: coinsValue,
+      type: taskType,
+      url: taskUrl || undefined,
+      isVerificationRequired: taskType !== 'regular'
     };
     
     const savedTask = saveTask(taskData);
@@ -85,6 +107,19 @@ const AdminTasks: React.FC = () => {
       deleteTask(id);
       setTasks(getTasks());
       toast.success('Task deleted successfully');
+    }
+  };
+  
+  const getTaskTypeIcon = (type: string) => {
+    switch (type) {
+      case 'youtube':
+        return <BrandYoutube className="h-4 w-4 mr-2 text-red-500" />;
+      case 'telegram':
+        return <BrandTelegram className="h-4 w-4 mr-2 text-blue-500" />;
+      case 'social':
+        return <ExternalLink className="h-4 w-4 mr-2 text-purple-500" />;
+      default:
+        return null;
     }
   };
   
@@ -114,6 +149,7 @@ const AdminTasks: React.FC = () => {
                   <thead>
                     <tr className="bg-muted/50">
                       <th className="px-4 py-3.5 text-left text-sm font-semibold text-muted-foreground">Task</th>
+                      <th className="px-4 py-3.5 text-center text-sm font-semibold text-muted-foreground">Type</th>
                       <th className="px-4 py-3.5 text-right text-sm font-semibold text-muted-foreground">Reward</th>
                       <th className="px-4 py-3.5 text-right text-sm font-semibold text-muted-foreground">Actions</th>
                     </tr>
@@ -125,6 +161,23 @@ const AdminTasks: React.FC = () => {
                           <div>
                             <div className="font-medium">{task.title}</div>
                             <div className="text-xs text-muted-foreground line-clamp-1">{task.description}</div>
+                            {task.url && (
+                              <a 
+                                href={task.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="flex items-center mt-1 text-xs text-blue-500 hover:underline"
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                View Link
+                              </a>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-center">
+                          <div className="flex items-center justify-center">
+                            {getTaskTypeIcon(task.type || 'regular')}
+                            <span className="capitalize">{task.type || 'Regular'}</span>
                           </div>
                         </td>
                         <td className="px-4 py-4 text-sm text-right">
@@ -200,6 +253,38 @@ const AdminTasks: React.FC = () => {
                     required 
                   />
                 </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="taskType">Task Type</Label>
+                  <Select value={taskType} onValueChange={(value: any) => setTaskType(value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select task type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="regular">Regular Task</SelectItem>
+                      <SelectItem value="social">Social Media Task</SelectItem>
+                      <SelectItem value="youtube">YouTube Subscription</SelectItem>
+                      <SelectItem value="telegram">Telegram Channel</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {taskType !== 'regular' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="taskUrl">URL {taskType === 'youtube' ? '(YouTube Channel)' : taskType === 'telegram' ? '(Telegram Channel)' : '(Website/Social Media)'}</Label>
+                    <Input 
+                      id="taskUrl" 
+                      value={taskUrl} 
+                      onChange={(e) => setTaskUrl(e.target.value)} 
+                      placeholder={
+                        taskType === 'youtube' ? 'https://www.youtube.com/channel/...' : 
+                        taskType === 'telegram' ? 'https://t.me/...' : 
+                        'https://...'
+                      }
+                      required 
+                    />
+                  </div>
+                )}
                 
                 <div className="space-y-2">
                   <Label htmlFor="coins">Reward (Coins)</Label>
