@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Coins } from 'lucide-react';
 import { Reward } from '@/types';
 import { createWithdrawalRequest } from '@/lib/rewards';
 import { getCurrentUser } from '@/lib/auth';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 
 interface RewardCardProps {
   reward: Reward;

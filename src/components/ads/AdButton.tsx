@@ -6,7 +6,7 @@ import { Coins, Clock } from 'lucide-react';
 import { AdOption } from '@/types';
 import { recordAdView, isAdInCooldown, getAdCooldownRemaining, getActivePopupAd } from '@/lib/ads';
 import { getCurrentUser } from '@/lib/auth';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 import PopupAd from './PopupAd';
 
 interface AdButtonProps {

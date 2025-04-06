@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { getCurrentUser, canClaimDailyReward, claimDailyReward, getTimeUntilNextDailyReward } from '@/lib/auth';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 import { getAppSettings } from '@/lib/settings';
 import { Gift } from 'lucide-react';
 

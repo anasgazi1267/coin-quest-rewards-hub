@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { logout } from '@/lib/auth';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 
 const NavSidebar: React.FC = () => {

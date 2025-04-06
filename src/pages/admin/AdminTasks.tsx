@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Coins, Plus, Pencil, Trash } from 'lucide-react';
 import { getTasks, saveTask, deleteTask } from '@/lib/tasks';
 import { Task } from '@/types';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 import NavSidebar from '@/components/admin/NavSidebar';
 
 const AdminTasks: React.FC = () => {

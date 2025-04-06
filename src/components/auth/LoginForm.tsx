@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { login } from '@/lib/auth';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 import { Eye, EyeOff } from 'lucide-react';
 
 const LoginForm: React.FC = () => {

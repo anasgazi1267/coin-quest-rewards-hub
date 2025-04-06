@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,7 +27,7 @@ import {
   Pencil, 
   Trash, 
   MonitorPlay,
-  LayoutBanner,
+  LayoutPanelTop,
   Clock,
   Coins
 } from 'lucide-react';
@@ -40,7 +39,7 @@ import {
   saveAdOptions
 } from '@/lib/ads';
 import { AdContent, AdOption } from '@/types';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 import NavSidebar from '@/components/admin/NavSidebar';
 
 const AdminAds: React.FC = () => {
@@ -79,7 +78,6 @@ const AdminAds: React.FC = () => {
   };
   
   const handleSaveAdContent = () => {
-    // Validate form
     if (!adHtml) {
       toast.error('Please enter the HTML content for the ad');
       return;
@@ -168,7 +166,7 @@ const AdminAds: React.FC = () => {
                                 {content.type === 'popup' ? (
                                   <MonitorPlay className="h-5 w-5 text-blue-500" />
                                 ) : (
-                                  <LayoutBanner className="h-5 w-5 text-green-500" />
+                                  <LayoutPanelTop className="h-5 w-5 text-green-500" />
                                 )}
                                 <span className="capitalize">{content.type} Ad</span>
                               </div>
@@ -282,7 +280,6 @@ const AdminAds: React.FC = () => {
             </TabsContent>
           </Tabs>
           
-          {/* Add/Edit Ad Content Dialog */}
           <Dialog open={isContentDialogOpen} onOpenChange={setIsContentDialogOpen}>
             <DialogContent className="sm:max-w-lg">
               <DialogHeader>

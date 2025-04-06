@@ -1,7 +1,6 @@
-
 import { User } from '@/types';
 import { STORAGE_KEYS } from './data';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 
 // Get all users from localStorage
 export const getUsers = (): User[] => {

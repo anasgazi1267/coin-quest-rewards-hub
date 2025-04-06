@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -24,7 +23,7 @@ import {
   X, 
   Clock
 } from 'lucide-react';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 import NavSidebar from '@/components/admin/NavSidebar';
 
 const AdminUsers: React.FC = () => {
@@ -177,7 +176,7 @@ const AdminUsers: React.FC = () => {
                             <td className="px-4 py-4 text-sm text-center">
                               <Badge 
                                 variant={
-                                  request.status === 'approved' ? "success" :
+                                  request.status === 'approved' ? "default" :
                                   request.status === 'rejected' ? "destructive" : "outline"
                                 }
                                 className="capitalize"

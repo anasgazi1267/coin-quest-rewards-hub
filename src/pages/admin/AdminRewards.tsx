@@ -25,7 +25,7 @@ import { Switch } from '@/components/ui/switch';
 import { Coins, Plus, Pencil, Trash } from 'lucide-react';
 import { getRewards, saveReward, deleteReward } from '@/lib/rewards';
 import { Reward } from '@/types';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 import NavSidebar from '@/components/admin/NavSidebar';
 
 const AdminRewards: React.FC = () => {

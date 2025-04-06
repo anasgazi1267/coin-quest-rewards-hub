@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { getAppSettings, saveAppSettings } from '@/lib/settings';
 import { AppSettings } from '@/types';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 import NavSidebar from '@/components/admin/NavSidebar';
 
 const AdminSettings: React.FC = () => {

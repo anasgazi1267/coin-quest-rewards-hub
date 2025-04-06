@@ -1,8 +1,7 @@
-
 import { AdOption, AdContent } from '@/types';
 import { STORAGE_KEYS } from './data';
 import { getCurrentUser, updateUserCoins } from './auth';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/lib/toast';
 
 // Get all ad options
 export const getAdOptions = (): AdOption[] => {
