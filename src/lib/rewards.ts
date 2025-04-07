@@ -1,3 +1,4 @@
+
 import { Reward, WithdrawalRequest, User } from '@/types';
 import { STORAGE_KEYS } from './data';
 import { getCurrentUser, updateUserCoins } from './auth';
@@ -58,7 +59,7 @@ export const saveWithdrawalRequests = (requests: WithdrawalRequest[]): void => {
 };
 
 // Create withdrawal request
-export const createWithdrawalRequest = (rewardId: string): WithdrawalRequest | null => {
+export const createWithdrawalRequest = (rewardId: string, playerId?: string): WithdrawalRequest | null => {
   const currentUser = getCurrentUser();
   if (!currentUser) {
     toast.error("You must be logged in to redeem rewards");
@@ -92,6 +93,11 @@ export const createWithdrawalRequest = (rewardId: string): WithdrawalRequest | n
     status: 'pending',
     createdAt: new Date().toISOString(),
   };
+
+  // Add player ID if provided
+  if (playerId) {
+    request.playerId = playerId;
+  }
   
   // Save request
   const requests = getWithdrawalRequests();
