@@ -1,4 +1,3 @@
-
 import { Reward, WithdrawalRequest, User } from '@/types';
 import { STORAGE_KEYS } from './data';
 import { getCurrentUser, updateUserCoins } from './auth';
@@ -75,7 +74,7 @@ export const createWithdrawalRequest = (rewardId: string, playerId?: string): Wi
   }
   
   if (currentUser.coins < reward.cost) {
-    toast.error(`Not enough coins. You need ${reward.cost} coins but have ${currentUser.coins}`);
+    toast.error(`Not enough coins. You need ${reward.cost - currentUser.coins} more coins to redeem this reward`);
     return null;
   }
   
@@ -103,7 +102,12 @@ export const createWithdrawalRequest = (rewardId: string, playerId?: string): Wi
   const requests = getWithdrawalRequests();
   saveWithdrawalRequests([...requests, request]);
   
-  toast.success("Redemption request submitted successfully!");
+  // New toast message for reward submission
+  toast.success("You will receive your payment within 24 hours.", {
+    description: `Reward: ${reward.name}`,
+    duration: 5000 // Show for 5 seconds
+  });
+  
   return request;
 };
 

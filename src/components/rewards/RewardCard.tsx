@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -43,7 +42,6 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward }) => {
       return;
     }
     
-    // Open dialog for all reward types now
     setIsDialogOpen(true);
   };
   
@@ -51,7 +49,6 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward }) => {
     setIsRedeeming(true);
     
     try {
-      // For game rewards, we need player ID
       if (reward.category === 'pubg' || reward.category === 'free-fire') {
         if (!playerId || playerId.trim() === '') {
           toast.error('Please enter your player ID');
@@ -65,20 +62,18 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward }) => {
           return;
         }
         
-        // Include player details in meta field
-        const playerDetails = {
+        const playerDetails = JSON.stringify({
           id: playerId,
           username: playerUsername
-        };
+        });
         
-        const request = createWithdrawalRequest(reward.id, JSON.stringify(playerDetails));
+        const request = createWithdrawalRequest(reward.id, playerDetails);
         if (request) {
           setIsDialogOpen(false);
           setPlayerId('');
           setPlayerUsername('');
         }
       } 
-      // For gift cards, we need email
       else if (reward.category === 'amazon' || reward.category === 'google' || reward.category === 'visa') {
         if (!email || email.trim() === '') {
           toast.error('Please enter your email');
@@ -92,7 +87,6 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward }) => {
           setEmail('');
         }
       }
-      // For other rewards
       else {
         const request = createWithdrawalRequest(reward.id);
         if (request) {
