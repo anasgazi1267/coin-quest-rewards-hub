@@ -1,6 +1,5 @@
-
-import React, { useState } from 'react';
-import { getAdOptions } from '@/lib/ads';
+import React, { useState, useEffect } from 'react';
+import { getAdOptions, getActivePopupAd, recordAdView, isAdInCooldown, getAdCooldownRemaining } from '@/lib/ads';
 import { getCurrentUser, updateUserCoins } from '@/lib/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,8 @@ import { Coins, Clock, ExternalLink, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BannerAd from '@/components/ads/BannerAd';
 import { toast } from '@/lib/toast';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import PopupAd from '@/components/ads/PopupAd';
 
 const ViewAds: React.FC = () => {
   const navigate = useNavigate();
@@ -16,6 +17,15 @@ const ViewAds: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isWatching, setIsWatching] = useState(false);
   const [countdown, setCountdown] = useState(0);
+  const [isAdDialogOpen, setIsAdDialogOpen] = useState(false);
+  
+  const adContent = getActivePopupAd();
+  
+  useEffect(() => {
+    if (!isAdDialogOpen) {
+      setCountdown(0);
+    }
+  }, [isAdDialogOpen]);
   
   if (!currentUser) {
     return (
@@ -39,20 +49,26 @@ const ViewAds: React.FC = () => {
 
     const option = adOptions.find(opt => opt.id === selectedOption);
     if (!option) return;
+    
+    if (isAdInCooldown(selectedOption, currentUser.id)) {
+      const cooldownSecs = getAdCooldownRemaining(selectedOption, currentUser.id);
+      toast.error(`Please wait ${cooldownSecs} seconds before viewing this ad again`);
+      return;
+    }
+    
+    if (!adContent) {
+      toast.error('No ad content available at the moment');
+      return;
+    }
 
-    setIsWatching(true);
+    setIsAdDialogOpen(true);
     setCountdown(option.duration);
+    setIsWatching(true);
 
-    // Set up the countdown timer
     const timer = setInterval(() => {
       setCountdown(prevCount => {
         if (prevCount <= 1) {
           clearInterval(timer);
-          // Award coins when countdown finishes
-          if (currentUser) {
-            updateUserCoins(currentUser.id, currentUser.coins + option.coins);
-            toast.success(`Congratulations! You earned ${option.coins} coins`);
-          }
           setIsWatching(false);
           return 0;
         }
@@ -61,9 +77,23 @@ const ViewAds: React.FC = () => {
     }, 1000);
   };
   
+  const handleCloseAd = () => {
+    if (!isWatching && selectedOption) {
+      recordAdView(selectedOption);
+      
+      const updatedUser = getCurrentUser();
+      if (updatedUser) {
+        toast.success(`Success! Your balance: ${updatedUser.coins} coins`);
+      }
+    } else if (isWatching) {
+      toast.error('You must watch the entire ad to receive coins');
+    }
+    
+    setIsAdDialogOpen(false);
+  };
+  
   return (
     <div className="container mx-auto py-8 px-4">
-      {/* Top Banner Ad */}
       <div className="mb-6 flex justify-center">
         <BannerAd />
       </div>
@@ -104,21 +134,14 @@ const ViewAds: React.FC = () => {
               <div className="mt-6 text-center">
                 <Button 
                   size="lg" 
-                  disabled={!selectedOption || isWatching}
-                  className={isWatching ? "" : "animate-pulse"}
+                  disabled={!selectedOption || isWatching || isAdDialogOpen}
+                  className={(!selectedOption || isWatching) ? "" : "animate-pulse"}
                   onClick={handleWatchAd}
                 >
-                  {isWatching ? (
-                    <span className="flex items-center">
-                      <Clock className="h-5 w-5 mr-2" />
-                      Watching Ad... {countdown}s
-                    </span>
-                  ) : (
-                    <span className="flex items-center">
-                      <Play className="h-5 w-5 mr-2" />
-                      Watch Now
-                    </span>
-                  )}
+                  <span className="flex items-center">
+                    <Play className="h-5 w-5 mr-2" />
+                    Watch Ad Now
+                  </span>
                 </Button>
               </div>
             </CardContent>
@@ -163,7 +186,6 @@ const ViewAds: React.FC = () => {
         </div>
         
         <div className="space-y-6">
-          {/* Middle Banner */}
           <div className="hidden lg:block">
             <BannerAd />
           </div>
@@ -208,10 +230,35 @@ const ViewAds: React.FC = () => {
         </div>
       </div>
       
-      {/* Bottom Banner Ad */}
       <div className="mt-8 flex justify-center">
         <BannerAd />
       </div>
+      
+      <Dialog open={isAdDialogOpen} onOpenChange={(open) => !isWatching && setIsAdDialogOpen(open)}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex justify-between items-center">
+              <span>Advertisement</span>
+              <div className="flex items-center text-sm">
+                <Clock className="h-4 w-4 mr-1" />
+                <span>{countdown}s remaining</span>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          
+          {adContent && (
+            <div className="my-4">
+              <PopupAd content={adContent} />
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button onClick={handleCloseAd} disabled={isWatching}>
+              {isWatching ? 'Please Wait...' : 'Close & Claim Coins'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

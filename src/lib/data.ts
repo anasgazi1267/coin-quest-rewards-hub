@@ -1,4 +1,3 @@
-
 import { User, Reward, Task, AdOption, WithdrawalRequest, AdContent, AppSettings } from '@/types';
 
 // Mock initial users
@@ -170,42 +169,51 @@ export const STORAGE_KEYS = {
   AD_OPTIONS: 'rewards-app-ad-options',
   SETTINGS: 'rewards-app-settings',
   AD_CONTENTS: 'rewards-app-ad-contents',
-  APP_SETTINGS: 'rewards-app-settings',
   INVITATIONS: 'rewards-app-invitations',
   INVITATION_SETTINGS: 'rewards-app-invitation-settings',
   IMAGES: 'rewards-app-images',
   LAST_SYNC: 'rewards-app-last-sync'
 };
 
-// Storage synchronization mechanism to solve cross-browser issues
+// Improved storage synchronization mechanism to solve cross-browser issues
 const syncStorage = () => {
   if (typeof window === 'undefined') return;
   
   try {
-    // Broadcast channel for cross-tab communication
-    const storageUpdateChannel = new BroadcastChannel('coin-quest-storage-sync');
+    // Check for last sync timestamp on page load
+    const lastSync = localStorage.getItem(STORAGE_KEYS.LAST_SYNC);
+    const now = new Date().toISOString();
     
-    // Listen for storage changes from other tabs
-    storageUpdateChannel.onmessage = (event) => {
-      if (event.data && event.data.key && event.data.value) {
-        // Update local storage without triggering another event
-        localStorage.setItem(event.data.key, event.data.value);
+    // Listen for storage events (works across tabs but same browser)
+    window.addEventListener('storage', (event) => {
+      if (event.key && event.key.startsWith('rewards-app-')) {
+        // Update internal app state if needed (e.g., refresh data)
+        // This will trigger when localStorage changes in other tabs
+        console.log('Storage updated in another tab:', event.key);
       }
-    };
+    });
     
-    // Override localStorage.setItem to broadcast changes
+    // Override localStorage.setItem to add timestamp and sync metadata
     const originalSetItem = localStorage.setItem;
     localStorage.setItem = function(key, value) {
       // Call the original function
       originalSetItem.apply(this, [key, value]);
       
-      // Broadcast the change to other tabs
-      if (key.startsWith('coin-quest-')) {
-        storageUpdateChannel.postMessage({ key, value });
+      // Save sync metadata for cross-browser detection
+      if (key.startsWith('rewards-app-') && key !== STORAGE_KEYS.LAST_SYNC) {
+        // Store a global last modification timestamp
+        originalSetItem.apply(this, [STORAGE_KEYS.LAST_SYNC, now]);
+        
+        // Store per-item sync metadata
+        const syncKey = `${key}-sync`;
+        originalSetItem.apply(this, [syncKey, now]);
       }
-      
-      // Update last sync timestamp
-      originalSetItem.apply(this, [STORAGE_KEYS.LAST_SYNC, new Date().toISOString()]);
+    };
+    
+    // Add function to check for stale data on page load
+    window.checkForDataUpdates = () => {
+      // This function can be called on app initialization
+      // to check if data needs to be refreshed from server or other source
     };
   } catch (error) {
     console.error('Storage sync setup failed:', error);
