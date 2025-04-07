@@ -1,3 +1,4 @@
+
 import { User, Reward, Task, AdOption, WithdrawalRequest, AdContent, AppSettings } from '@/types';
 
 // Mock initial users
@@ -175,6 +176,13 @@ export const STORAGE_KEYS = {
   LAST_SYNC: 'rewards-app-last-sync'
 };
 
+// Define the type for the window with our custom property
+declare global {
+  interface Window {
+    checkForDataUpdates?: () => void;
+  }
+}
+
 // Improved storage synchronization mechanism to solve cross-browser issues
 const syncStorage = () => {
   if (typeof window === 'undefined') return;
@@ -214,6 +222,7 @@ const syncStorage = () => {
     window.checkForDataUpdates = () => {
       // This function can be called on app initialization
       // to check if data needs to be refreshed from server or other source
+      console.log('Checking for data updates...');
     };
   } catch (error) {
     console.error('Storage sync setup failed:', error);
