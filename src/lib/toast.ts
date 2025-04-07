@@ -1,18 +1,24 @@
 
 import { toast as sonnerToast } from "sonner";
 
-// Re-export the toast functions with our app's styling
+// Define the ToastOptions type to match what we're using
+type ToastOptions = {
+  description?: string;
+  duration?: number;
+};
+
+// Re-export the toast functions with our app's styling and extended options
 export const toast = {
-  success: (message: string) => {
-    return sonnerToast.success(message);
+  success: (message: string, options?: ToastOptions) => {
+    return sonnerToast.success(message, options);
   },
-  error: (message: string) => {
-    return sonnerToast.error(message);
+  error: (message: string, options?: ToastOptions) => {
+    return sonnerToast.error(message, options);
   },
-  info: (message: string) => {
-    return sonnerToast.info(message);
+  info: (message: string, options?: ToastOptions) => {
+    return sonnerToast.info(message, options);
   },
-  warning: (message: string) => {
-    return sonnerToast.warning(message);
+  warning: (message: string, options?: ToastOptions) => {
+    return sonnerToast.warning(message, options);
   }
 };
