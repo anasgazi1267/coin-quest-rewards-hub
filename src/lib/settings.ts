@@ -14,7 +14,7 @@ export const getAppSettings = (): AppSettings => {
     };
   }
   
-  const settings = localStorage.getItem(STORAGE_KEYS.APP_SETTINGS);
+  const settings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
   return settings ? JSON.parse(settings) : {
     siteName: 'Coin Quest',
     primaryColor: '#8B5CF6',
@@ -27,5 +27,5 @@ export const getAppSettings = (): AppSettings => {
 // Save app settings
 export const saveAppSettings = (settings: AppSettings): void => {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEYS.APP_SETTINGS, JSON.stringify(settings));
+  localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
 };

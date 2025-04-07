@@ -1,3 +1,4 @@
+
 import { User, Reward, Task, AdOption, WithdrawalRequest, AdContent, AppSettings } from '@/types';
 
 // Mock initial users
@@ -168,9 +169,12 @@ export const STORAGE_KEYS = {
   ADS: 'rewards-app-ads',
   AD_OPTIONS: 'rewards-app-ad-options',
   SETTINGS: 'rewards-app-settings',
+  AD_CONTENTS: 'rewards-app-ad-contents',
+  APP_SETTINGS: 'rewards-app-settings',
   INVITATIONS: 'rewards-app-invitations',
   INVITATION_SETTINGS: 'rewards-app-invitation-settings',
-  IMAGES: 'rewards-app-images'
+  IMAGES: 'rewards-app-images',
+  LAST_SYNC: 'rewards-app-last-sync'
 };
 
 // Storage synchronization mechanism to solve cross-browser issues
@@ -239,8 +243,8 @@ export const initializeStorage = () => {
     localStorage.setItem(STORAGE_KEYS.AD_CONTENTS, JSON.stringify(adContents));
   }
   
-  if (!localStorage.getItem(STORAGE_KEYS.APP_SETTINGS)) {
-    localStorage.setItem(STORAGE_KEYS.APP_SETTINGS, JSON.stringify(appSettings));
+  if (!localStorage.getItem(STORAGE_KEYS.SETTINGS)) {
+    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(appSettings));
   }
   
   if (!localStorage.getItem(STORAGE_KEYS.IMAGES)) {
