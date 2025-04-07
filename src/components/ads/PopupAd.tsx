@@ -10,7 +10,7 @@ const PopupAd: React.FC<PopupAdProps> = ({ content }) => {
   return (
     <div 
       dangerouslySetInnerHTML={{ __html: content.html }} 
-      className="border rounded-md p-4"
+      className="flex justify-center items-center border rounded-md p-4 min-h-[250px]"
     />
   );
 };

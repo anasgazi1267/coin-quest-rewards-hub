@@ -104,7 +104,7 @@ const AdButton: React.FC<AdButtonProps> = ({ adOption }) => {
             </DialogTitle>
           </DialogHeader>
           
-          {adContent && <PopupAd content={adContent} />}
+          {adContent && <div className="flex justify-center my-4"><PopupAd content={adContent} /></div>}
           
           <DialogFooter>
             <Button onClick={handleCloseAd} disabled={isWatching}>

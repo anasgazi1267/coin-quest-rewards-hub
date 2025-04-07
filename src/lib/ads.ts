@@ -1,4 +1,3 @@
-
 import { AdOption, AdContent } from '@/types';
 import { STORAGE_KEYS } from './data';
 import { getCurrentUser, updateUserCoins } from './auth';

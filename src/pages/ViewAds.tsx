@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { getAdOptions, getActivePopupAd, recordAdView, isAdInCooldown, getAdCooldownRemaining } from '@/lib/ads';
 import { getCurrentUser, updateUserCoins } from '@/lib/auth';
@@ -247,7 +248,7 @@ const ViewAds: React.FC = () => {
           </DialogHeader>
           
           {adContent && (
-            <div className="my-4">
+            <div className="my-4 flex justify-center">
               <PopupAd content={adContent} />
             </div>
           )}

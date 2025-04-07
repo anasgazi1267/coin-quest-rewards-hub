@@ -34,7 +34,7 @@ const BannerAd: React.FC = () => {
             <div 
               key={bannerAds[0].id}
               dangerouslySetInnerHTML={{ __html: bannerAds[0].html }} 
-              className="w-[468px] h-[60px] overflow-hidden rounded border border-gray-200"
+              className="w-[468px] h-[60px] overflow-hidden rounded"
             />
           )}
         </div>
