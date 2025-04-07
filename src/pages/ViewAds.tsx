@@ -1,18 +1,21 @@
 
 import React, { useState } from 'react';
 import { getAdOptions } from '@/lib/ads';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser, updateUserCoins } from '@/lib/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Coins, Clock, ExternalLink } from 'lucide-react';
+import { Coins, Clock, ExternalLink, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BannerAd from '@/components/ads/BannerAd';
+import { toast } from '@/lib/toast';
 
 const ViewAds: React.FC = () => {
   const navigate = useNavigate();
   const adOptions = getAdOptions();
   const currentUser = getCurrentUser();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [isWatching, setIsWatching] = useState(false);
+  const [countdown, setCountdown] = useState(0);
   
   if (!currentUser) {
     return (
@@ -27,9 +30,44 @@ const ViewAds: React.FC = () => {
       </div>
     );
   }
+
+  const handleWatchAd = () => {
+    if (!selectedOption) {
+      toast.error('Please select an ad duration first');
+      return;
+    }
+
+    const option = adOptions.find(opt => opt.id === selectedOption);
+    if (!option) return;
+
+    setIsWatching(true);
+    setCountdown(option.duration);
+
+    // Set up the countdown timer
+    const timer = setInterval(() => {
+      setCountdown(prevCount => {
+        if (prevCount <= 1) {
+          clearInterval(timer);
+          // Award coins when countdown finishes
+          if (currentUser) {
+            updateUserCoins(currentUser.id, currentUser.coins + option.coins);
+            toast.success(`Congratulations! You earned ${option.coins} coins`);
+          }
+          setIsWatching(false);
+          return 0;
+        }
+        return prevCount - 1;
+      });
+    }, 1000);
+  };
   
   return (
     <div className="container mx-auto py-8 px-4">
+      {/* Top Banner Ad */}
+      <div className="mb-6 flex justify-center">
+        <BannerAd />
+      </div>
+      
       <h1 className="text-3xl font-bold mb-6 text-center">View Ads & Earn Coins</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -47,7 +85,7 @@ const ViewAds: React.FC = () => {
                     className={`cursor-pointer transition-all hover:shadow-md ${
                       selectedOption === option.id ? 'border-2 border-primary' : ''
                     }`}
-                    onClick={() => setSelectedOption(option.id)}
+                    onClick={() => !isWatching && setSelectedOption(option.id)}
                   >
                     <CardContent className="p-4 flex justify-between items-center">
                       <div className="flex items-center">
@@ -66,10 +104,21 @@ const ViewAds: React.FC = () => {
               <div className="mt-6 text-center">
                 <Button 
                   size="lg" 
-                  disabled={!selectedOption}
-                  className="animate-pulse"
+                  disabled={!selectedOption || isWatching}
+                  className={isWatching ? "" : "animate-pulse"}
+                  onClick={handleWatchAd}
                 >
-                  Watch Now
+                  {isWatching ? (
+                    <span className="flex items-center">
+                      <Clock className="h-5 w-5 mr-2" />
+                      Watching Ad... {countdown}s
+                    </span>
+                  ) : (
+                    <span className="flex items-center">
+                      <Play className="h-5 w-5 mr-2" />
+                      Watch Now
+                    </span>
+                  )}
                 </Button>
               </div>
             </CardContent>
@@ -157,6 +206,11 @@ const ViewAds: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
+      
+      {/* Bottom Banner Ad */}
+      <div className="mt-8 flex justify-center">
+        <BannerAd />
       </div>
     </div>
   );

@@ -28,7 +28,9 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward }) => {
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [playerId, setPlayerId] = useState('');
+  const [playerUsername, setPlayerUsername] = useState('');
   const [isRedeeming, setIsRedeeming] = useState(false);
+  const [email, setEmail] = useState('');
   
   const handleRedeemClick = () => {
     if (!currentUser) {
@@ -41,34 +43,65 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward }) => {
       return;
     }
     
-    if (reward.requiresId) {
-      setIsDialogOpen(true);
-    } else {
-      handleRedeem();
-    }
+    // Open dialog for all reward types now
+    setIsDialogOpen(true);
   };
   
-  const handleRedeem = (id?: string) => {
+  const handleRedeem = () => {
     setIsRedeeming(true);
     
     try {
-      const request = createWithdrawalRequest(reward.id, id);
-      if (request) {
-        setIsDialogOpen(false);
-        setPlayerId('');
+      // For game rewards, we need player ID
+      if (reward.category === 'pubg' || reward.category === 'free-fire') {
+        if (!playerId || playerId.trim() === '') {
+          toast.error('Please enter your player ID');
+          setIsRedeeming(false);
+          return;
+        }
+        
+        if (!playerUsername || playerUsername.trim() === '') {
+          toast.error('Please enter your player username');
+          setIsRedeeming(false);
+          return;
+        }
+        
+        // Include player details in meta field
+        const playerDetails = {
+          id: playerId,
+          username: playerUsername
+        };
+        
+        const request = createWithdrawalRequest(reward.id, JSON.stringify(playerDetails));
+        if (request) {
+          setIsDialogOpen(false);
+          setPlayerId('');
+          setPlayerUsername('');
+        }
+      } 
+      // For gift cards, we need email
+      else if (reward.category === 'amazon' || reward.category === 'google' || reward.category === 'visa') {
+        if (!email || email.trim() === '') {
+          toast.error('Please enter your email');
+          setIsRedeeming(false);
+          return;
+        }
+        
+        const request = createWithdrawalRequest(reward.id, email);
+        if (request) {
+          setIsDialogOpen(false);
+          setEmail('');
+        }
+      }
+      // For other rewards
+      else {
+        const request = createWithdrawalRequest(reward.id);
+        if (request) {
+          setIsDialogOpen(false);
+        }
       }
     } finally {
       setIsRedeeming(false);
     }
-  };
-  
-  const handleSubmitPlayerId = () => {
-    if (!playerId || playerId.trim() === '') {
-      toast.error('Please enter your player ID');
-      return;
-    }
-    
-    handleRedeem(playerId);
   };
   
   const getCategoryName = (category: string) => {
@@ -103,7 +136,7 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward }) => {
             <span className="text-muted-foreground text-sm">coins</span>
           </div>
           
-          {reward.requiresId && (
+          {(reward.category === 'pubg' || reward.category === 'free-fire') && (
             <div className="mt-2 text-xs text-muted-foreground flex items-center">
               <AlertCircle className="h-3 w-3 mr-1" />
               <span>Requires {getCategoryName(reward.category)} ID</span>
@@ -124,33 +157,74 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward }) => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Enter Your {getCategoryName(reward.category)} ID</DialogTitle>
+            <DialogTitle>
+              {reward.category === 'pubg' || reward.category === 'free-fire' 
+                ? `Enter Your ${getCategoryName(reward.category)} Details` 
+                : `Complete ${getCategoryName(reward.category)} Gift Card Redemption`}
+            </DialogTitle>
             <DialogDescription>
-              Please enter your {getCategoryName(reward.category)} player ID to receive your reward
+              {reward.category === 'pubg' || reward.category === 'free-fire' 
+                ? `Please enter your ${getCategoryName(reward.category)} player ID and username to receive your reward`
+                : `Please provide your email to receive your ${getCategoryName(reward.category)} gift card`}
             </DialogDescription>
           </DialogHeader>
           
           <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="playerId">Player ID</Label>
-              <Input 
-                id="playerId"
-                placeholder={`Your ${getCategoryName(reward.category)} ID`}
-                value={playerId}
-                onChange={(e) => setPlayerId(e.target.value)}
-              />
-            </div>
+            {(reward.category === 'pubg' || reward.category === 'free-fire') && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="playerId">Player ID</Label>
+                  <Input 
+                    id="playerId"
+                    placeholder={`Your ${getCategoryName(reward.category)} ID`}
+                    value={playerId}
+                    onChange={(e) => setPlayerId(e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="playerUsername">Player Username</Label>
+                  <Input 
+                    id="playerUsername"
+                    placeholder={`Your ${getCategoryName(reward.category)} Username`}
+                    value={playerUsername}
+                    onChange={(e) => setPlayerUsername(e.target.value)}
+                  />
+                </div>
+                
+                <div className="bg-muted p-3 rounded-md">
+                  <p className="text-sm">
+                    Make sure to enter the correct ID and username. Rewards cannot be resent if the information is incorrect.
+                  </p>
+                </div>
+              </>
+            )}
             
-            <div className="bg-muted p-3 rounded-md">
-              <p className="text-sm">
-                Make sure to enter the correct ID. Rewards cannot be resent if the ID is incorrect.
-              </p>
-            </div>
+            {(reward.category === 'amazon' || reward.category === 'google' || reward.category === 'visa') && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input 
+                    id="email"
+                    type="email"
+                    placeholder="Your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                
+                <div className="bg-muted p-3 rounded-md">
+                  <p className="text-sm">
+                    Your gift card code will be sent to this email address. Please ensure it's correct.
+                  </p>
+                </div>
+              </>
+            )}
           </div>
           
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSubmitPlayerId} disabled={isRedeeming}>
+            <Button onClick={handleRedeem} disabled={isRedeeming}>
               {isRedeeming ? 'Processing...' : 'Submit'}
             </Button>
           </DialogFooter>

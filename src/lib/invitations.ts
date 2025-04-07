@@ -1,7 +1,7 @@
 
 import { Invitation, User } from '@/types';
 import { STORAGE_KEYS } from './data';
-import { getCurrentUser, getUsers, saveUsers } from './auth';
+import { getCurrentUser, getUsers, saveUsers, updateUserCoins } from './auth';
 import { toast } from '@/lib/toast';
 
 // Get all invitations
@@ -15,6 +15,19 @@ export const getInvitations = (): Invitation[] => {
 export const saveInvitations = (invitations: Invitation[]): void => {
   if (typeof window === 'undefined') return;
   localStorage.setItem(STORAGE_KEYS.INVITATIONS, JSON.stringify(invitations));
+};
+
+// Get invitation settings
+export const getInvitationSettings = () => {
+  if (typeof window === 'undefined') return { targetReferrals: 10, reward: 500 };
+  const settings = localStorage.getItem(STORAGE_KEYS.INVITATION_SETTINGS);
+  return settings ? JSON.parse(settings) : { targetReferrals: 10, reward: 500 };
+};
+
+// Save invitation settings
+export const saveInvitationSettings = (settings: { targetReferrals: number, reward: number }) => {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(STORAGE_KEYS.INVITATION_SETTINGS, JSON.stringify(settings));
 };
 
 // Generate a random invite code
@@ -121,10 +134,20 @@ export const useInviteCode = (code: string): boolean => {
         return { ...user, invitedBy: inviter.id };
       }
       if (user.id === inviter.id) {
+        const newInviteCount = (user.inviteCount || 0) + 1;
+        const settings = getInvitationSettings();
+        let coinsToAdd = 50; // Base reward per invite
+        
+        // Check if the user reached the target referrals
+        if (newInviteCount === settings.targetReferrals) {
+          coinsToAdd += settings.reward; // Add bonus reward
+          toast.success(`${inviter.username} has reached ${settings.targetReferrals} referrals and received a bonus ${settings.reward} coins!`);
+        }
+        
         return { 
           ...user, 
-          inviteCount: (user.inviteCount || 0) + 1,
-          coins: user.coins + 50 // Reward for successful invite
+          inviteCount: newInviteCount,
+          coins: user.coins + coinsToAdd
         };
       }
       return user;
@@ -136,6 +159,15 @@ export const useInviteCode = (code: string): boolean => {
   }
   
   return false;
+};
+
+// Check if a user has reached the referral target
+export const checkReferralTarget = (userId: string): boolean => {
+  const user = getUsers().find(u => u.id === userId);
+  if (!user) return false;
+  
+  const { targetReferrals } = getInvitationSettings();
+  return (user.inviteCount || 0) >= targetReferrals;
 };
 
 // Get invite link for sharing

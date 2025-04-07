@@ -3,6 +3,7 @@ import React from 'react';
 import { Task } from '@/types';
 import { getTasks } from '@/lib/tasks';
 import TaskCard from '@/components/tasks/TaskCard';
+import InviteTask from '@/components/tasks/InviteTask';
 
 const Tasks: React.FC = () => {
   const tasks = getTasks();
@@ -15,6 +16,13 @@ const Tasks: React.FC = () => {
           Earn coins by completing simple tasks. The more tasks you complete, the more rewards you can redeem!
         </p>
       </div>
+      
+      {/* Special Invite Task Card */}
+      <div className="mb-10">
+        <InviteTask />
+      </div>
+      
+      <h2 className="text-2xl font-bold mb-6">Available Tasks</h2>
       
       {tasks.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">

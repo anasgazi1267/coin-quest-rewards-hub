@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,11 +20,12 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Coins, Plus, Pencil, Trash, ExternalLink, Youtube, MessageCircle } from 'lucide-react';
+import { Coins, Plus, Pencil, Trash, ExternalLink, Youtube, MessageCircle, Users } from 'lucide-react';
 import { getTasks, saveTask, deleteTask } from '@/lib/tasks';
 import { Task } from '@/types';
 import { toast } from '@/lib/toast';
 import NavSidebar from '@/components/admin/NavSidebar';
+import InviteSettings from '@/components/admin/InviteSettings';
 
 const AdminTasks: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(getTasks());
@@ -133,6 +135,11 @@ const AdminTasks: React.FC = () => {
               <Plus className="h-4 w-4 mr-2" />
               Add Task
             </Button>
+          </div>
+          
+          {/* Invite System Settings */}
+          <div className="mb-8">
+            <InviteSettings />
           </div>
           
           <Card>

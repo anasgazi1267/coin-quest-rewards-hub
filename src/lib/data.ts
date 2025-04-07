@@ -160,18 +160,17 @@ export const appSettings: AppSettings = {
 
 // Local storage keys
 export const STORAGE_KEYS = {
-  USERS: 'coin-quest-users',
-  TASKS: 'coin-quest-tasks',
-  REWARDS: 'coin-quest-rewards',
-  WITHDRAWAL_REQUESTS: 'coin-quest-withdrawal-requests',
-  AD_OPTIONS: 'coin-quest-ad-options',
-  AD_CONTENTS: 'coin-quest-ad-contents',
-  APP_SETTINGS: 'coin-quest-app-settings',
-  DAILY_REWARDS: 'coin-quest-daily-rewards',
-  INVITATIONS: 'coin-quest-invitations',
-  CURRENT_USER: 'coin-quest-current-user',
-  IMAGES: 'coin-quest-images',
-  LAST_SYNC: 'coin-quest-last-sync',
+  USERS: 'rewards-app-users',
+  CURRENT_USER: 'rewards-app-current-user',
+  TASKS: 'rewards-app-tasks',
+  REWARDS: 'rewards-app-rewards',
+  WITHDRAWAL_REQUESTS: 'rewards-app-withdrawal-requests',
+  ADS: 'rewards-app-ads',
+  AD_OPTIONS: 'rewards-app-ad-options',
+  SETTINGS: 'rewards-app-settings',
+  INVITATIONS: 'rewards-app-invitations',
+  INVITATION_SETTINGS: 'rewards-app-invitation-settings',
+  IMAGES: 'rewards-app-images'
 };
 
 // Storage synchronization mechanism to solve cross-browser issues
@@ -246,5 +245,13 @@ export const initializeStorage = () => {
   
   if (!localStorage.getItem(STORAGE_KEYS.IMAGES)) {
     localStorage.setItem(STORAGE_KEYS.IMAGES, JSON.stringify([]));
+  }
+  
+  // Initialize invitation settings if not exist
+  if (!localStorage.getItem(STORAGE_KEYS.INVITATION_SETTINGS)) {
+    localStorage.setItem(STORAGE_KEYS.INVITATION_SETTINGS, JSON.stringify({
+      targetReferrals: 10,
+      reward: 500
+    }));
   }
 };
