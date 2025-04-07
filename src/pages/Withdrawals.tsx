@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,8 +28,35 @@ const Withdrawals: React.FC = () => {
       return;
     }
     
-    const requests = getUserWithdrawalRequests(user.id);
-    setWithdrawalRequests(requests);
+    const loadRequests = () => {
+      const requests = getUserWithdrawalRequests(user.id);
+      setWithdrawalRequests(requests);
+    };
+    
+    loadRequests();
+    
+    const handleDataChange = (event: CustomEvent) => {
+      if (event.detail && 
+          (event.detail.key === 'rewards-app-withdrawal-requests' || 
+           event.detail.key === 'rewards-app-current-user')) {
+        loadRequests();
+        setUser(getCurrentUser());
+      }
+    };
+    
+    window.addEventListener('rewards-app-data-changed', handleDataChange as EventListener);
+    
+    const handleStorageChange = () => {
+      loadRequests();
+      setUser(getCurrentUser());
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('rewards-app-data-changed', handleDataChange as EventListener);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [user, navigate]);
   
   if (!user) return null;
@@ -38,13 +64,12 @@ const Withdrawals: React.FC = () => {
   const pendingRequests = withdrawalRequests.filter(req => req.status === 'pending');
   const completedRequests = withdrawalRequests.filter(req => req.status !== 'pending');
   
-  // Get status badge color
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'completed':
+      case 'approved':
         return (
           <Badge className="bg-green-100 text-green-800 border-green-300">
-            <CheckCircle2 className="h-3 w-3 mr-1" /> Completed
+            <CheckCircle2 className="h-3 w-3 mr-1" /> Approved
           </Badge>
         );
       case 'rejected':

@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getAdOptions, getActivePopupAd, recordAdView, isAdInCooldown, getAdCooldownRemaining } from '@/lib/ads';
 import { getCurrentUser, updateUserCoins } from '@/lib/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,8 +18,23 @@ const ViewAds: React.FC = () => {
   const [isWatching, setIsWatching] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [isAdDialogOpen, setIsAdDialogOpen] = useState(false);
+  const coinSoundRef = useRef<HTMLAudioElement | null>(null);
   
   const adContent = getActivePopupAd();
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      coinSoundRef.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2075/2075-preview.mp3');
+      coinSoundRef.current.volume = 0.3;
+    }
+    
+    return () => {
+      if (coinSoundRef.current) {
+        coinSoundRef.current.pause();
+        coinSoundRef.current = null;
+      }
+    };
+  }, []);
   
   useEffect(() => {
     if (!isAdDialogOpen) {
@@ -81,6 +95,11 @@ const ViewAds: React.FC = () => {
   const handleCloseAd = () => {
     if (!isWatching && selectedOption) {
       recordAdView(selectedOption);
+      
+      if (coinSoundRef.current) {
+        coinSoundRef.current.currentTime = 0;
+        coinSoundRef.current.play().catch(err => console.error("Error playing sound:", err));
+      }
       
       const updatedUser = getCurrentUser();
       if (updatedUser) {

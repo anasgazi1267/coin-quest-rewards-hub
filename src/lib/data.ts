@@ -183,7 +183,7 @@ declare global {
   }
 }
 
-// Improved storage synchronization mechanism to solve cross-browser issues
+// Improved storage synchronization mechanism
 const syncStorage = () => {
   if (typeof window === 'undefined') return;
   
@@ -196,8 +196,12 @@ const syncStorage = () => {
     window.addEventListener('storage', (event) => {
       if (event.key && event.key.startsWith('rewards-app-')) {
         // Update internal app state if needed (e.g., refresh data)
-        // This will trigger when localStorage changes in other tabs
         console.log('Storage updated in another tab:', event.key);
+        
+        // Dispatch a custom event that components can listen for
+        window.dispatchEvent(new CustomEvent('rewards-app-data-changed', { 
+          detail: { key: event.key, newValue: event.newValue }
+        }));
       }
     });
     
@@ -215,6 +219,11 @@ const syncStorage = () => {
         // Store per-item sync metadata
         const syncKey = `${key}-sync`;
         originalSetItem.apply(this, [syncKey, now]);
+        
+        // Dispatch event for real-time updates within the same browser
+        window.dispatchEvent(new CustomEvent('rewards-app-data-changed', { 
+          detail: { key, newValue: value }
+        }));
       }
     };
     

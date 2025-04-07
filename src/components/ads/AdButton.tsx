@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Coins, Clock } from 'lucide-react';
@@ -19,11 +19,28 @@ const AdButton: React.FC<AdButtonProps> = ({ adOption }) => {
   const [isWatching, setIsWatching] = useState(false);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
   const currentUser = getCurrentUser();
+  const coinSoundRef = useRef<HTMLAudioElement | null>(null);
   
   const cooldownSeconds = currentUser ? getAdCooldownRemaining(adOption.id, currentUser.id) : 0;
   const isInCooldown = currentUser ? isAdInCooldown(adOption.id, currentUser.id) : false;
   
   const adContent = getActivePopupAd();
+  
+  // Create audio element for coin sound
+  useEffect(() => {
+    // Create an audio element for the coin sound
+    if (typeof window !== 'undefined') {
+      coinSoundRef.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2075/2075-preview.mp3');
+      coinSoundRef.current.volume = 0.3; // Set volume to 30%
+    }
+    
+    return () => {
+      if (coinSoundRef.current) {
+        coinSoundRef.current.pause();
+        coinSoundRef.current = null;
+      }
+    };
+  }, []);
   
   const handleOpenAd = () => {
     if (!currentUser) {
@@ -68,6 +85,14 @@ const AdButton: React.FC<AdButtonProps> = ({ adOption }) => {
     // Only reward if they watched the full ad
     if (!isWatching) {
       recordAdView(adOption.id);
+      
+      // Play coin sound when claiming coins
+      if (coinSoundRef.current) {
+        coinSoundRef.current.currentTime = 0;
+        coinSoundRef.current.play().catch(err => console.error("Error playing sound:", err));
+      }
+      
+      toast.success(`You earned ${adOption.coins} coins!`);
     } else {
       toast.error('You must watch the entire ad to receive coins');
     }

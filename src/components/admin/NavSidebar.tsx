@@ -57,8 +57,8 @@ const NavSidebar: React.FC = () => {
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                   isActive(link.href)
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"  // Added hover state
-                    : "hover:bg-accent hover:text-accent-foreground"
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-white hover:bg-accent hover:text-accent-foreground"
                 )}
               >
                 <link.icon className="h-4 w-4" />
@@ -71,7 +71,7 @@ const NavSidebar: React.FC = () => {
       <div className="mt-auto border-t p-4">
         <Button
           variant="outline"
-          className="w-full justify-start gap-2 hover:bg-accent"  // Added hover background
+          className="w-full justify-start gap-2 bg-white hover:bg-accent"
           onClick={handleLogout}
         >
           <LogOut className="h-4 w-4" />

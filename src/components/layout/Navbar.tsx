@@ -35,22 +35,22 @@ const Navbar: React.FC<NavbarProps> = ({ isMobile, isOpen, onClose }) => {
         {isMobile ? (
           <>
             <div className="ml-auto">
-              <Button variant="ghost" size="icon" onClick={onClose}>
+              <Button variant="ghost" size="icon" onClick={onClose} className="bg-white hover:bg-accent">
                 {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
             </div>
             
             {isOpen && (
               <div className="fixed inset-0 top-16 z-50 bg-background flex flex-col p-6 space-y-4">
-                <Link to="/" className="text-lg font-medium" onClick={onClose}>Home</Link>
-                <Link to="/rewards" className="text-lg font-medium" onClick={onClose}>Rewards</Link>
-                <Link to="/tasks" className="text-lg font-medium" onClick={onClose}>Tasks</Link>
-                <Link to="/view-ads" className="text-lg font-medium" onClick={onClose}>View Ads</Link>
+                <Link to="/" className="text-lg font-medium bg-white rounded-md px-3 py-2 hover:bg-accent" onClick={onClose}>Home</Link>
+                <Link to="/rewards" className="text-lg font-medium bg-white rounded-md px-3 py-2 hover:bg-accent" onClick={onClose}>Rewards</Link>
+                <Link to="/tasks" className="text-lg font-medium bg-white rounded-md px-3 py-2 hover:bg-accent" onClick={onClose}>Tasks</Link>
+                <Link to="/view-ads" className="text-lg font-medium bg-white rounded-md px-3 py-2 hover:bg-accent" onClick={onClose}>View Ads</Link>
                 
                 {user ? (
                   <>
-                    <Link to="/withdrawals" className="text-lg font-medium" onClick={onClose}>Withdrawals</Link>
-                    <Link to="/profile" className="text-lg font-medium" onClick={onClose}>Profile</Link>
+                    <Link to="/withdrawals" className="text-lg font-medium bg-white rounded-md px-3 py-2 hover:bg-accent" onClick={onClose}>Withdrawals</Link>
+                    <Link to="/profile" className="text-lg font-medium bg-white rounded-md px-3 py-2 hover:bg-accent" onClick={onClose}>Profile</Link>
                     <Button variant="destructive" onClick={() => {
                       localStorage.removeItem('coin-quest-current-user');
                       navigate('/login');
@@ -73,20 +73,20 @@ const Navbar: React.FC<NavbarProps> = ({ isMobile, isOpen, onClose }) => {
         ) : (
           <>
             <nav className="mx-6 flex items-center space-x-4 lg:space-x-6">
-              <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
+              <Link to="/" className="text-sm font-medium transition-colors hover:text-primary bg-white px-3 py-1 rounded-md hover:bg-accent">
                 Home
               </Link>
-              <Link to="/rewards" className="text-sm font-medium transition-colors hover:text-primary">
+              <Link to="/rewards" className="text-sm font-medium transition-colors hover:text-primary bg-white px-3 py-1 rounded-md hover:bg-accent">
                 Rewards
               </Link>
-              <Link to="/tasks" className="text-sm font-medium transition-colors hover:text-primary">
+              <Link to="/tasks" className="text-sm font-medium transition-colors hover:text-primary bg-white px-3 py-1 rounded-md hover:bg-accent">
                 Tasks
               </Link>
-              <Link to="/view-ads" className="text-sm font-medium transition-colors hover:text-primary">
+              <Link to="/view-ads" className="text-sm font-medium transition-colors hover:text-primary bg-white px-3 py-1 rounded-md hover:bg-accent">
                 View Ads
               </Link>
               {user && (
-                <Link to="/withdrawals" className="text-sm font-medium transition-colors hover:text-primary">
+                <Link to="/withdrawals" className="text-sm font-medium transition-colors hover:text-primary bg-white px-3 py-1 rounded-md hover:bg-accent">
                   Withdrawals
                 </Link>
               )}
@@ -102,11 +102,11 @@ const Navbar: React.FC<NavbarProps> = ({ isMobile, isOpen, onClose }) => {
                   
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="relative">
+                      <Button variant="ghost" size="sm" className="relative bg-white hover:bg-accent">
                         {user.name || user.username}
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
+                    <DropdownMenuContent align="end" className="bg-white">
                       {user.role === 'admin' && (
                         <>
                           <DropdownMenuItem onSelect={() => navigate('/admin')}>
@@ -133,7 +133,7 @@ const Navbar: React.FC<NavbarProps> = ({ isMobile, isOpen, onClose }) => {
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <Button variant="ghost" onClick={() => navigate('/login')}>Login</Button>
+                  <Button variant="ghost" onClick={() => navigate('/login')} className="bg-white hover:bg-accent">Login</Button>
                   <Button onClick={() => navigate('/register')}>Register</Button>
                 </div>
               )}
